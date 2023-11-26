@@ -56,28 +56,31 @@ def get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote):
 
 
 def get_text(doc: marko.block.Document, from_heading: str = None):
-    found_heading = False
+    heading_level = 0
     description = ""
 
     for section in doc.children:
-        if not found_heading and not isinstance(section, marko.block.Heading):
+        if heading_level == 0 and not isinstance(section, marko.block.Heading):
             continue
 
         if isinstance(section, marko.block.Heading):
             if from_heading is not None:
-                if found_heading:
-                    break
+                if heading_level > 0:
+                    if section.level <= heading_level:
+                        break
+                    else:
+                        description += f"<b>{get_raw_text(list(section.children))}</b>"
                 else:
                     for heading_children in section.children:
                         if isinstance(heading_children, marko.inline.RawText):
                             if heading_children.children == from_heading:
-                                found_heading = True
+                                heading_level = section.level
                                 break
             else:
-                if found_heading:
+                if heading_level > 0 and heading_level <= section.level:
                     break
 
-                found_heading = True
+                heading_level = section.level
         elif isinstance(section, marko.block.BlankLine):
             description += "\n\n"
         elif isinstance(section, (marko.block.Paragraph, marko.block.Quote)):
@@ -140,14 +143,14 @@ def main():
 
     print(f"Found {repo}")
 
-    text = ""
-
     contents = path.read_text("utf-8")
     parser = marko.Parser()
     doc = parser.parse(contents)
 
     print("Fetching Description...")
-    text += get_text(doc)
+    description = get_text(doc)
+
+    return
 
 
 if __name__ == "__main__":
