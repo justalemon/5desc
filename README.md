@@ -1,22 +1,68 @@
-# 5desc<br>[![GitHub Actions][actions-img]][actions-url] [![Patreon][patreon-img]][patreon-url] [![PayPal][paypal-img]][paypal-url] [![Discord][discord-img]][discord-url]
+# LemonUI<br>[![GitHub Actions][actions-img]][actions-url] [![NuGet][nuget-img-3]][nuget-url-3] [![NuGet][nuget-img-f]][nuget-url-f] [![NuGet][nuget-img-r]][nuget-url-r] [![NuGet][nuget-img-a]][nuget-url-a] [![Patreon][patreon-img]][patreon-url] [![PayPal][paypal-img]][paypal-url] [![Discord][discord-img]][discord-url]
 
-5desc is a simple tool that can be used stanalone or as a GitHub Action to convert a README.md into a format compatible with 5mods horrible HTML input box.
+LemonUI is a framework for creating UI systems in Grand Theft Auto V that is compatible with FiveM, RageMP, RagePluginHook ScriptHookVDotNet 2 and ScriptHookVDotNet 3. It allows you to create UI Elements with a NativeUI-like style, or you can also create your own UI System from scratch via the resolution-independant classes for Text, Rectangles and Textures.
+
+It was created as a replacement for NativeUI due to being too convoluted to develop and maintain. LemonUI retains most (if not all) of the UI Elements available in NativeUI.
+
+Special thanks to:
+
+* Guad for the original work in NativeUI
+* alloc8or for the help with the GTA Online Loading Screen Scaleform
+* ikt for helping me to use SET_SCRIPT_GFX_ALIGN and SET_SCRIPT_GFX_ALIGN_PARAMS
+* Dot. for the snippet of code used for the item scrolling
+* deterministic_bubble for answering some questions about some missing C# classes in FiveM
+* PNWParksFan for helping me with some RPH question when I was doing the port
 
 ## Download
 
-* [GitHub Releases](https://github.com/justalemon/5desc/releases)
-* [GitHub Actions](https://github.com/justalemon/5desc/actions) (experimental versions)
+* [5mods](https://www.gta5-mods.com/scripts/lemonui)
+* [GitHub Releases](https://github.com/LemonUIbyLemon/LemonUI/releases)
+* [GitHub Actions](https://github.com/LemonUIbyLemon/LemonUI/actions) (experimental versions)
 
 ## Installation
 
-Clone the repository and use fivedesc.py, or use the action in your GitHub Workflow.
+> Warning: You don't need to install all of the files. You only need to install the ones for the framework you plan to use. For example, if you want to install SHVDN mods, you don't need to install the RPH version.
+
+### FiveM
+
+You don't need to install any files when using FiveM. When you connect to a server, the resources that need it will automatically provide a copy of LemonUI.
+
+### RageMP
+
+You don't need to install any files when using RageMP. When you connect to a server, the resources that need it will automatically provide a copy of LemonUI when compiling the code.
+
+### RagePluginHook
+
+Copy all of the files from the **RPH** folder inside of the compressed file to the root of your GTA V installation directory.
+
+### ScriptHookVDotNet 2 and ScriptHookVDotNet 3
+
+**PLEASE NOTE THAT THE LAST VERSION THAT SUPPORTED SHVDN2 WAS 1.5.2. [You can download it here](https://github.com/LemonUIbyLemon/LemonUI/releases/tag/v1.5.2).**
+
+Copy all of the files from the **SHVDN2** and/or **SHVDN3** folder(s) inside of the compressed file to your **scripts** directory.
 
 ## Usage
 
-Just run fivedesc.py and it will output a README.html for you to copy paste into the text box.
+Once installed, the mods that require LemonUI will start working.
 
-[actions-img]: https://img.shields.io/github/actions/workflow/status/justalemon/5desc/main.yml?branch=master&label=actions
-[actions-url]: https://github.com/justalemon/5desc/actions
+## Developers
+
+Check the [Quick Start guide](https://github.com/LemonUIbyLemon/LemonUI/wiki/Quick-Start) to learn how to use LemonUI in your project.
+
+If you would like to make changes to the code, clone the repo, restore the packages and open the solution in your favorite IDE.
+
+[actions-img]: https://img.shields.io/github/actions/workflow/status/LemonUIbyLemon/LemonUI/main.yml?branch=master&label=actions
+[actions-url]: https://github.com/LemonUIbyLemon/LemonUI/actions
+[nuget-img-3]: https://img.shields.io/nuget/v/LemonUI.SHVDN3?label=nuget%20%28shvdn3%29
+[nuget-url-3]: https://www.nuget.org/packages/LemonUI.SHVDN3/
+[nuget-img-f]: https://img.shields.io/nuget/v/LemonUI.FiveM?label=nuget%20%28fivem%29
+[nuget-url-f]: https://www.nuget.org/packages/LemonUI.FiveM/
+[nuget-img-m]: https://img.shields.io/nuget/v/LemonUI.RageMP?label=nuget%20%28ragemp%29
+[nuget-url-m]: https://www.nuget.org/packages/LemonUI.RageMP/
+[nuget-img-r]: https://img.shields.io/nuget/v/LemonUI.RagePluginHook?label=nuget%20%28rph%29
+[nuget-url-r]: https://www.nuget.org/packages/LemonUI.RagePluginHook/
+[nuget-img-a]: https://img.shields.io/nuget/v/LemonUI.AltV?label=nuget%20%28altv%29
+[nuget-url-a]: https://www.nuget.org/packages/LemonUI.AltV/
 [patreon-img]: https://img.shields.io/badge/support-patreon-FF424D.svg
 [patreon-url]: https://www.patreon.com/lemonchan
 [paypal-img]: https://img.shields.io/badge/support-paypal-0079C1.svg

@@ -149,6 +149,7 @@ def main():
 
     print("Fetching Description...")
     description = get_text(doc)
+    installation = get_text(doc, "Installation")
 
     return
 
