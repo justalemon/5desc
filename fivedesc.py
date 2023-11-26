@@ -202,7 +202,7 @@ def main():
     print("Building Footer...")
     footer = build_footer(doc.link_ref_defs, repo)
     print("Constructing final text...")
-    text = f"{description}\n<b>Installation Instructions</b>\n{installation}\n\n{footer}"
+    text = f"{description}\n<b>Installation Instructions</b>\n\n{installation}\n\n{footer}"
 
     print("Saving...")
     destination = Path.cwd() / "README.html"
