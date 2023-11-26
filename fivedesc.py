@@ -19,6 +19,17 @@ def get_paragraph_text(paragraph: marko.block.Paragraph):
     for children in paragraph.children:
         if isinstance(children, marko.inline.RawText):
             text += children.children
+        elif isinstance(children, marko.inline.Link):
+            link_href = children.dest
+            link_text = ""
+
+            for link_children in children.children:
+                if isinstance(link_children, marko.inline.RawText):
+                    link_text += link_children.children
+                else:
+                    __raise_exception(type(link_children))
+
+            text += f"<a href=\"{link_href}\">{link_text}</a>"
         else:
             __raise_exception(type(children))
 
