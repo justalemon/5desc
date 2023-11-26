@@ -8,6 +8,13 @@ import marko
 import marko.block
 import marko.inline
 
+LICENSES = [
+    ("MIT License", "MIT License"),
+    ("Apache License", "Apache License", "Version 2.0", "January 2004"),
+    ("GNU GPL v3.0", "GNU GENERAL PUBLIC LICENSE", "Version 3", "29 June 2007"),
+    ("GNU GPL v2.0", "GNU GENERAL PUBLIC LICENSE", "Version 2", "June 1991")
+]
+
 
 def __raise_exception(t: type):
     raise TypeError(f"Unexpected type: {t.__module__}.{t.__qualname__}")
@@ -125,6 +132,24 @@ def get_github_repo():
     remote = remote.rstrip(".git")
 
     return remote
+
+
+def detect_license():
+    path = Path.cwd() / "LICENSE"
+
+    if not path.is_file():
+        return None
+
+    text = path.read_text("utf-8")
+
+    for license_entry in LICENSES:
+        name = license_entry[0]
+        matches = license_entry[1:]
+
+        if all(x in text for x in matches):
+            return name
+
+    return "Unknown"
 
 
 def main():
