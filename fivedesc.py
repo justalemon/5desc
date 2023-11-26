@@ -13,7 +13,22 @@ def __raise_exception(t: type):
     raise TypeError(f"Unexpected type: {t.__module__}.{t.__qualname__}")
 
 
-def get_paragraph_text(paragraph: marko.block.Paragraph):
+def get_raw_text(children: str | list[marko.inline.Element]):
+    if isinstance(children, str):
+        return children
+
+    text = ""
+
+    for link_children in children:
+        if isinstance(link_children, marko.inline.RawText):
+            text += link_children.children
+        else:
+            __raise_exception(type(link_children))
+
+    return text
+
+
+def get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote):
     text = ""
 
     for children in paragraph.children:
@@ -21,15 +36,13 @@ def get_paragraph_text(paragraph: marko.block.Paragraph):
             text += children.children
         elif isinstance(children, marko.inline.Link):
             link_href = children.dest
-            link_text = ""
-
-            for link_children in children.children:
-                if isinstance(link_children, marko.inline.RawText):
-                    link_text += link_children.children
-                else:
-                    __raise_exception(type(link_children))
-
+            link_text = get_raw_text(children.children)
             text += f"<a href=\"{link_href}\">{link_text}</a>"
+        elif isinstance(children, marko.block.Paragraph):
+            text += get_paragraph_text(children)
+        elif isinstance(children, marko.inline.StrongEmphasis):
+            strong = get_raw_text(children.children)
+            text += f"<b>{strong}</b>"
         else:
             __raise_exception(type(children))
 
