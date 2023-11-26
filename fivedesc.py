@@ -164,11 +164,12 @@ def build_footer(links: dict[str, tuple[str, str]], repo: str):
         formatted_links = [f"<a href=\"{x}\">{x}</a>" for x in filter(None, [patreon, paypal])]
         lines.append("<b>Support my Mods</b>: " + " / ".join(formatted_links))
 
-    local_license = detect_license()
+    if repo is not None:
+        local_license = detect_license()
 
-    lines.append(f"<b>Source Code</b>: <a href=\"{repo}\">{repo}</a> (under {local_license})")
-    lines.append(f"<b>Feature Requests & Bug Reports</b>: <a href=\"{repo}/issues\">{repo}/issues</a>")
-    lines.append(f"<b>Full Changelog</b>: <a href=\"{repo}/releases\">{repo}/releases</a>")
+        lines.append(f"<b>Source Code</b>: <a href=\"{repo}\">{repo}</a> (under {local_license})")
+        lines.append(f"<b>Feature Requests & Bug Reports</b>: <a href=\"{repo}/issues\">{repo}/issues</a>")
+        lines.append(f"<b>Full Changelog</b>: <a href=\"{repo}/releases\">{repo}/releases</a>")
 
     return "\n".join(lines)
 
@@ -183,11 +184,12 @@ def main():
     repo = get_github_repo()
 
     if repo is None:
-        sys.exit("Couldn't find GitHub repository!")
+        print("Warning: Couldn't find GitHub repository, will skip GitHub Links")
     if not repo.startswith("https://github.com"):
-        sys.exit("Repository is not a GitHub repository!")
-
-    print(f"Found {repo}")
+        repo = None
+        print("Warning: Repository is not a GitHub repository, will skip GitHub Links")
+    else:
+        print(f"Found {repo}")
 
     contents = path.read_text("utf-8")
     parser = marko.Parser()
