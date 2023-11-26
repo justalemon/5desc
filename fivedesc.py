@@ -36,16 +36,29 @@ def get_paragraph_text(paragraph: marko.block.Paragraph):
     return text
 
 
-def get_description(doc: marko.block.Document):
+def get_text(doc: marko.block.Document, from_heading: str = None):
     found_heading = False
     description = ""
 
     for section in doc.children:
-        if isinstance(section, marko.block.Heading):
-            if found_heading:
-                break
+        if not found_heading and not isinstance(section, marko.block.Heading):
+            continue
 
-            found_heading = True
+        if isinstance(section, marko.block.Heading):
+            if from_heading is not None:
+                if found_heading:
+                    break
+                else:
+                    for heading_children in section.children:
+                        if isinstance(heading_children, marko.inline.RawText):
+                            if heading_children.children == from_heading:
+                                found_heading = True
+                                break
+            else:
+                if found_heading:
+                    break
+
+                found_heading = True
         elif isinstance(section, marko.block.BlankLine):
             description += "\n\n"
         elif isinstance(section, marko.block.Paragraph):
@@ -115,7 +128,7 @@ def main():
     doc = parser.parse(contents)
 
     print("Fetching Description...")
-    text += get_description(doc)
+    text += get_text(doc)
 
 
 if __name__ == "__main__":
