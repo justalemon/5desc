@@ -80,7 +80,7 @@ def get_text(doc: marko.block.Document, from_heading: str = None):
                 found_heading = True
         elif isinstance(section, marko.block.BlankLine):
             description += "\n\n"
-        elif isinstance(section, marko.block.Paragraph):
+        elif isinstance(section, (marko.block.Paragraph, marko.block.Quote)):
             description += get_paragraph_text(section)
         elif isinstance(section, marko.block.List):
             new_list = "<ul>"
