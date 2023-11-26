@@ -1,6 +1,9 @@
+import os
 import sys
 from pathlib import Path
 
+import dulwich.errors
+import dulwich.repo
 import marko
 import marko.block
 import marko.inline
@@ -61,11 +64,38 @@ def get_description(doc: marko.block.Document):
     return description.strip("\n")
 
 
+def get_github_repo():
+    if "GITHUB_REPOSITORY" in os.environ:
+        return "https://github.com/" + os.environ["GITHUB_REPOSITORY"]
+
+    try:
+        repo = dulwich.repo.Repo(".")
+    except dulwich.errors.NotGitRepository:
+        return None
+
+    config = repo.get_config()
+    remote = config.get(("remote", "origin"), "url").decode("utf-8")
+    remote = remote.replace("git@github.com:", "https://github.com/")
+    remote = remote.rstrip(".git")
+
+    return remote
+
+
 def main():
     path = Path.cwd() / "README.md"
 
     if not path.is_file():
         sys.exit("README.md does not exists!")
+
+    print("Fetching Repo...")
+    repo = get_github_repo()
+
+    if repo is None:
+        sys.exit("Couldn't find GitHub repository!")
+    if not repo.startswith("https://github.com"):
+        sys.exit("Repository is not a GitHub repository!")
+
+    print(f"Found {repo}")
 
     text = ""
 
@@ -73,7 +103,7 @@ def main():
     parser = marko.Parser()
     doc = parser.parse(contents)
 
-    print("Fetching description...")
+    print("Fetching Description...")
     text += get_description(doc)
 
 
