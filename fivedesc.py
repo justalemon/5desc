@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -9,6 +10,7 @@ import marko
 import marko.block
 import marko.inline
 
+RE_GITHUB = re.compile("github.com[/:]([a-zA-Z]+)/([a-zA-Z0-9]+)")
 LICENSES = [
     ("MIT License", "MIT License"),
     ("Apache License", "Apache License", "Version 2.0", "January 2004"),
@@ -118,9 +120,9 @@ def get_text(doc: marko.block.Document, from_heading: str = None):
     return description.strip("\n")
 
 
-def get_github_repo():
+def get_github_slug():
     if "GITHUB_REPOSITORY" in os.environ:
-        return "https://github.com/" + os.environ["GITHUB_REPOSITORY"]
+        return os.environ["GITHUB_REPOSITORY"]
 
     try:
         repo = dulwich.repo.Repo(".")
@@ -128,11 +130,26 @@ def get_github_repo():
         return None
 
     config = repo.get_config()
-    remote = config.get(("remote", "origin"), "url").decode("utf-8")
-    remote = remote.replace("git@github.com:", "https://github.com/")
-    remote = remote.rstrip(".git")
 
-    return remote
+    for section in config.sections():
+        name = section[0].decode("utf-8")
+
+        if name != "remote":
+            continue
+
+        remote = config.get(section, "url").decode("utf-8")
+        match = RE_GITHUB.search(remote)
+
+        if not match:
+            continue
+
+        groups = match.groups()
+        owner = groups[0]
+        name = groups[1]
+
+        return f"{owner}/{name}"
+
+    return None
 
 
 def detect_license():
@@ -153,7 +170,7 @@ def detect_license():
     return "Unknown"
 
 
-def build_footer(links: dict[str, tuple[str, str]], repo: str):
+def build_footer(links: dict[str, tuple[str, str]], repo_slug: str):
     lines = []
 
     if "discord-url" in links:
@@ -165,8 +182,9 @@ def build_footer(links: dict[str, tuple[str, str]], repo: str):
         formatted_links = [f"<a href=\"{x}\">{x}</a>" for x in filter(None, [patreon, paypal])]
         lines.append("<b>Support my Mods</b>: " + " / ".join(formatted_links))
 
-    if repo is not None:
+    if repo_slug is not None:
         local_license = detect_license()
+        repo = f"https://github.com/{repo_slug}"
 
         lines.append(f"<b>Source Code</b>: <a href=\"{repo}\">{repo}</a> (under {local_license})")
         lines.append(f"<b>Feature Requests & Bug Reports</b>: <a href=\"{repo}/issues\">{repo}/issues</a>")
@@ -200,15 +218,12 @@ def main():
         sys.exit(f"{input_path} does not exists!")
 
     print("Fetching Repo...")
-    repo = get_github_repo()
+    repo_slug = get_github_slug()
 
-    if repo is None:
+    if repo_slug is None:
         print("Warning: Couldn't find GitHub repository, will skip GitHub Links")
-    if not repo.startswith("https://github.com"):
-        repo = None
-        print("Warning: Repository is not a GitHub repository, will skip GitHub Links")
     else:
-        print(f"Found {repo}")
+        print(f"Found GitHub Repository: {repo_slug}")
 
     contents = input_path.read_text("utf-8")
     parser = marko.Parser()
@@ -219,7 +234,7 @@ def main():
     print("Fetching Installation Instructions...")
     installation = get_text(doc, "Installation")
     print("Building Footer...")
-    footer = build_footer(doc.link_ref_defs, repo)
+    footer = build_footer(doc.link_ref_defs, repo_slug)
     print("Constructing final text...")
     text = f"{description}\n\n<b>Installation Instructions</b>\n\n{installation}\n\n{footer}"
 
