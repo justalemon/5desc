@@ -238,7 +238,7 @@ def main():
     print("Building Footer...")
     footer = build_footer(doc.link_ref_defs, repo_slug)
     print("Constructing final text...")
-    text = f"{description}\n\n<b>Installation Instructions</b>\n\n{installation}\n\n{footer}"
+    text = f"{description}\n\n<b>Installation Instructions</b>\n\n{installation}\n\n{footer}\n"
 
     print("Saving...")
     output_path.write_text(text, "utf-8")
