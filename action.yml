@@ -1,0 +1,17 @@
+name: "5desc"
+description: "Generates 5mods descriptions in HTML from a Markdown file"
+
+inputs: 
+  input:
+    description: "The input Markdown file."
+    default: "README.md"
+  output:
+    description: "The Output HTML file"
+    default: "README.html"
+
+runs:
+  using: docker
+  image: Dockerfile
+  args:
+    - ${{ inputs.input }}
+    - ${{ inputs.output }}
