@@ -23,7 +23,7 @@ jobs:
       - uses: docker/metadata-action@v5.2.0
         id: metadata
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
             type=sha,format=short,prefix=
             type=raw,value=latest,enable={{ is_default_branch }}
