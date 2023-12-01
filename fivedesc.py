@@ -12,6 +12,7 @@ import marko.block
 import marko.inline
 
 RE_GITHUB = re.compile("github.com[/:]([a-zA-Z]+)/([a-zA-Z0-9]+)")
+PARSER = marko.Parser()
 LICENSES = [
     ("MIT License", "MIT License"),
     ("Apache License", "Apache License", "Version 2.0", "January 2004"),
@@ -229,8 +230,7 @@ def main():
         print(f"Found GitHub Repository: {repo_slug}")
 
     contents = input_path.read_text("utf-8")
-    parser = marko.Parser()
-    doc = parser.parse(contents)
+    doc = PARSER.parse(contents)
 
     print("Fetching Description...")
     description = get_text(doc)
