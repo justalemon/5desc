@@ -1,4 +1,4 @@
-name: Compile Image
+name: Build
 on:
   release:
     types:
@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 jobs:
-  build:
+  build-docker:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.1.1
@@ -34,7 +34,7 @@ jobs:
   run:
     runs-on: ubuntu-22.04
     needs:
-      - build
+      - build-docker
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: ./
