@@ -217,6 +217,8 @@ def main():
     if not input_path.is_file():
         sys.exit(f"{input_path} does not exists!")
 
+    print(f"Using {input_path} as the input file and {output_path} as the output file")
+
     print("Fetching Repo...")
     repo_slug = get_github_slug()
 
