@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 from pathlib import Path
@@ -174,11 +175,29 @@ def build_footer(links: dict[str, tuple[str, str]], repo: str):
     return "\n".join(lines)
 
 
-def main():
-    path = Path.cwd() / "README.md"
+def parse_params():
+    parser = argparse.ArgumentParser(prog="5desc",
+                                     description="5desc is a program for generating 5mods descriptions",
+                                     epilog="made with ❤️ with 🍋")
+    parser.add_argument("input",
+                        help="the input markdown file",
+                        default="README.md",
+                        nargs="?")
+    parser.add_argument("output",
+                        help="the output html file",
+                        nargs="?")
 
-    if not path.is_file():
-        sys.exit("README.md does not exists!")
+    return parser.parse_args()
+
+
+def main():
+    args = parse_params()
+
+    input_path = Path(args.input).resolve()
+    output_path = Path(args.output).resolve() if args.output else input_path.with_suffix(".html")
+
+    if not input_path.is_file():
+        sys.exit(f"{input_path} does not exists!")
 
     print("Fetching Repo...")
     repo = get_github_repo()
@@ -191,7 +210,7 @@ def main():
     else:
         print(f"Found {repo}")
 
-    contents = path.read_text("utf-8")
+    contents = input_path.read_text("utf-8")
     parser = marko.Parser()
     doc = parser.parse(contents)
 
@@ -205,8 +224,7 @@ def main():
     text = f"{description}\n<b>Installation Instructions</b>\n\n{installation}\n\n{footer}"
 
     print("Saving...")
-    destination = Path.cwd() / "README.html"
-    destination.write_text(text, "utf-8")
+    output_path.write_text(text, "utf-8")
 
     print("Done 🍋")
 
