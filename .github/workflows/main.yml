@@ -40,7 +40,7 @@ jobs:
         with:
           python-version: 3.8
       - run: pip install -r requirements-dev.txt
-      - run: ruff --format=github .
+      - run: ruff --output-format=github .
   wheel:
     runs-on: ubuntu-22.04
     needs:
