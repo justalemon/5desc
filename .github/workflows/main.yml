@@ -40,6 +40,10 @@ jobs:
           python-version: 3.8
       - run: pip install build
       - run: python -m build
+      - uses: actions/upload-artifact@v3.1.3
+        with:
+          name: 5desc.Wheel
+          path: dist/*
   run:
     runs-on: ubuntu-22.04
     needs:
