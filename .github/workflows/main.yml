@@ -31,8 +31,20 @@ jobs:
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+  ruff:
+    runs-on: ubuntu-22.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-python@v4.7.1
+        with:
+          python-version: 3.8
+      - run: pip install -r requirements-dev.txt
+      - run: ruff .
   wheel:
     runs-on: ubuntu-22.04
+    needs:
+      - ruff
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: actions/setup-python@v4.7.1
