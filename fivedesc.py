@@ -4,6 +4,7 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 import dulwich.errors
 import dulwich.repo
@@ -22,17 +23,17 @@ LICENSES = [
 ]
 
 
-def __raise_exception(t: type):
+def __raise_exception(t: type) -> None:
     raise TypeError(f"Unexpected type: {t.__module__}.{t.__qualname__}")
 
 
-def build_link(link: marko.inline.Link):
+def __build_link(link: marko.inline.Link) -> str:
     link_href = link.dest
-    link_text = get_raw_text(link.children)
-    return f"<a href=\"{link_href}\">{link_text}</a>"
+    link_text = __get_raw_text(link.children)
+    return f'<a href="{link_href}">{link_text}</a>'
 
 
-def get_raw_text(children: str | list[marko.inline.Element]):
+def __get_raw_text(children: str | list[marko.inline.Element]) -> str:
     if isinstance(children, str):
         return children
 
@@ -42,25 +43,25 @@ def get_raw_text(children: str | list[marko.inline.Element]):
         if isinstance(link_children, marko.inline.RawText):
             text += link_children.children
         elif isinstance(link_children, marko.inline.Link):
-            text += build_link(link_children)
+            text += __build_link(link_children)
         else:
             __raise_exception(type(link_children))
 
     return text
 
 
-def get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote):
+def __get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote) -> Optional[str]:
     text = ""
 
     for children in paragraph.children:
         if isinstance(children, marko.inline.RawText):
             text += children.children
         elif isinstance(children, marko.inline.Link):
-            text += build_link(children)
+            text += __build_link(children)
         elif isinstance(children, marko.block.Paragraph):
-            text += get_paragraph_text(children)
+            text += __get_paragraph_text(children)
         elif isinstance(children, marko.inline.StrongEmphasis):
-            strong = get_raw_text(children.children)
+            strong = __get_raw_text(children.children)
             text += f"<b>{strong}</b>"
         else:
             __raise_exception(type(children))
@@ -68,7 +69,7 @@ def get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote):
     return text
 
 
-def get_text(doc: marko.block.Document, from_heading: str = None):
+def __get_text(doc: marko.block.Document, from_heading: Optional[str] = None) -> Optional[str]:
     heading_level = 0
     description = ""
 
@@ -81,14 +82,12 @@ def get_text(doc: marko.block.Document, from_heading: str = None):
                 if heading_level > 0:
                     if section.level <= heading_level:
                         break
-                    else:
-                        description += f"<b>{get_raw_text(list(section.children))}</b>"
+                    description += f"<b>{__get_raw_text(list(section.children))}</b>"
                 else:
-                    for heading_children in section.children:
-                        if isinstance(heading_children, marko.inline.RawText):
-                            if heading_children.children == from_heading:
-                                heading_level = section.level
-                                break
+                    for h_children in section.children:
+                        if isinstance(h_children, marko.inline.RawText) and h_children.children == from_heading:
+                            heading_level = section.level
+                            break
             else:
                 if heading_level > 0 and heading_level <= section.level:
                     break
@@ -97,7 +96,7 @@ def get_text(doc: marko.block.Document, from_heading: str = None):
         elif isinstance(section, marko.block.BlankLine):
             description += "\n\n"
         elif isinstance(section, (marko.block.Paragraph, marko.block.Quote)):
-            description += get_paragraph_text(section)
+            description += __get_paragraph_text(section)
         elif isinstance(section, marko.block.List):
             new_list = "<ul>"
 
@@ -106,7 +105,7 @@ def get_text(doc: marko.block.Document, from_heading: str = None):
                 if isinstance(item, marko.block.ListItem):
                     for item_child in item.children:
                         if isinstance(item_child, marko.block.Paragraph):
-                            new_list += get_paragraph_text(item_child).strip("\n")
+                            new_list += __get_paragraph_text(item_child).strip("\n")
                         else:
                             __raise_exception(type(item_child))
                 else:
@@ -123,7 +122,7 @@ def get_text(doc: marko.block.Document, from_heading: str = None):
     return description.strip("\n")
 
 
-def get_github_slug():
+def __get_github_slug() -> Optional[str]:
     if "GITHUB_REPOSITORY" in os.environ:
         return os.environ["GITHUB_REPOSITORY"]
 
@@ -155,7 +154,7 @@ def get_github_slug():
     return None
 
 
-def detect_license():
+def __detect_license() -> Optional[str]:
     path = Path.cwd() / "LICENSE"
 
     if not path.is_file():
@@ -173,7 +172,7 @@ def detect_license():
     return "Unknown"
 
 
-def build_changelog(repo_slug: str):
+def __build_changelog(repo_slug: str) -> Optional[str]:
     if not repo_slug:
         return None
 
@@ -217,30 +216,30 @@ def build_changelog(repo_slug: str):
     return "\n\n".join(releases_formatted)
 
 
-def build_footer(links: dict[str, tuple[str, str]], repo_slug: str):
+def __build_footer(links: dict[str, tuple[str, str]], repo_slug: str) -> str:
     lines = []
 
     if "discord-url" in links:
         discord = links["discord-url"][0]
-        lines.append(f"<b>Join the Conversation</b>: <a href=\"{discord}\">{discord}</a>")
+        lines.append(f'<b>Join the Conversation</b>: <a href="{discord}">{discord}</a>')
     if "patreon-url" in links or "paypal-url" in links:
-        patreon = links["patreon-url"][0] if  "patreon-url" in links else None
-        paypal = links["paypal-url"][0] if  "paypal-url" in links else None
-        formatted_links = [f"<a href=\"{x}\">{x}</a>" for x in filter(None, [patreon, paypal])]
+        patreon = links["patreon-url"][0] if "patreon-url" in links else None
+        paypal = links["paypal-url"][0] if "paypal-url" in links else None
+        formatted_links = [f'<a href="{x}">{x}</a>' for x in filter(None, [patreon, paypal])]
         lines.append("<b>Support my Mods</b>: " + " / ".join(formatted_links))
 
     if repo_slug is not None:
-        local_license = detect_license()
+        local_license = __detect_license()
         repo = f"https://github.com/{repo_slug}"
 
-        lines.append(f"<b>Source Code</b>: <a href=\"{repo}\">{repo}</a> (under {local_license})")
-        lines.append(f"<b>Feature Requests & Bug Reports</b>: <a href=\"{repo}/issues\">{repo}/issues</a>")
-        lines.append(f"<b>Full Changelog</b>: <a href=\"{repo}/releases\">{repo}/releases</a>")
+        lines.append(f'<b>Source Code</b>: <a href="{repo}">{repo}</a> (under {local_license})')
+        lines.append(f'<b>Feature Requests & Bug Reports</b>: <a href="{repo}/issues">{repo}/issues</a>')
+        lines.append(f'<b>Full Changelog</b>: <a href="{repo}/releases">{repo}/releases</a>')
 
     return "\n".join(lines)
 
 
-def parse_params():
+def __parse_params() -> argparse.Namespace:
     parser = argparse.ArgumentParser(prog="5desc",
                                      description="5desc is a program for generating 5mods descriptions",
                                      epilog="made with ❤️ with 🍋")
@@ -258,8 +257,8 @@ def parse_params():
     return parser.parse_args()
 
 
-def main():
-    args = parse_params()
+def main():  # noqa: ANN201, D103
+    args = __parse_params()
 
     input_path = Path(args.input).resolve()
     output_path = Path(args.output).resolve() if args.output else input_path.with_suffix(".html")
@@ -270,7 +269,7 @@ def main():
     print(f"Using {input_path} as the input file and {output_path} as the output file")
 
     print("Fetching Repo...")
-    repo_slug = get_github_slug()
+    repo_slug = __get_github_slug()
 
     if repo_slug is None:
         print("Warning: Couldn't find GitHub repository, will skip GitHub Links")
@@ -281,15 +280,15 @@ def main():
     doc = PARSER.parse(contents)
 
     print("Fetching Description...")
-    description = get_text(doc)
+    description = __get_text(doc)
     print("Fetching Installation Instructions...")
-    installation = get_text(doc, "Installation")
+    installation = __get_text(doc, "Installation")
     print("Building Footer...")
-    footer = build_footer(doc.link_ref_defs, repo_slug)
+    footer = __build_footer(doc.link_ref_defs, repo_slug)
 
     if not args.no_changelog:
         print("Fetching releases for changelog...")
-        changelog = build_changelog(repo_slug)
+        changelog = __build_changelog(repo_slug)
     else:
         print("Skipping changelog generation")
         changelog = None
