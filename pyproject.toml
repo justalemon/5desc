@@ -62,7 +62,8 @@ ignore = [
     "ANN101",
     "ANN204",
     "COM812",
-    "PLR2004"
+    "PLR2004",
+    "TRY003"
 ]
 select = [
     "F", # pyflakes
