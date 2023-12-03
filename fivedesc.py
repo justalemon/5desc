@@ -10,6 +10,7 @@ import dulwich.repo
 import marko
 import marko.block
 import marko.inline
+import requests
 
 RE_GITHUB = re.compile("github.com[/:]([a-zA-Z]+)/([a-zA-Z0-9]+)")
 PARSER = marko.Parser()
@@ -172,6 +173,50 @@ def detect_license():
     return "Unknown"
 
 
+def build_changelog(repo_slug: str):
+    if not repo_slug:
+        return None
+
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+    }
+
+    if "GITHUB_TOKEN" in os.environ:
+        headers["Authorization"] = "Bearer " + os.environ["GITHUB_TOKEN"]
+
+    releases_raw = []
+    page = 1
+
+    while True:
+        resp = requests.get(f"https://api.github.com/repos/{repo_slug}/releases?per_page=100&page={page}",
+                            headers=headers)
+
+        if not resp.ok:
+            print(f"Unable to fetch Releases from GitHub: Code {resp.status_code}")
+            return None
+
+        fetched_releases = resp.json()
+
+        if not fetched_releases:
+            break
+
+        releases_raw.extend(fetched_releases)
+        page += 1
+
+    if not releases_raw:
+        return None
+
+    releases_formatted = []
+
+    for release in releases_raw:
+        name = release["name"]
+        body = release["body"].replace("\r\n", "\n").strip("\n")
+        releases_formatted.append(f"<b>{name}</b>\n\n{body}")
+
+    return "\n\n".join(releases_formatted)
+
+
 def build_footer(links: dict[str, tuple[str, str]], repo_slug: str):
     lines = []
 
@@ -206,6 +251,9 @@ def parse_params():
     parser.add_argument("output",
                         help="the output html file",
                         nargs="?")
+    parser.add_argument("--no-changelog",
+                        help="don't include the changelog from GitHub",
+                        action="store_true")
 
     return parser.parse_args()
 
@@ -238,8 +286,19 @@ def main():
     installation = get_text(doc, "Installation")
     print("Building Footer...")
     footer = build_footer(doc.link_ref_defs, repo_slug)
+
+    if not args.no_changelog:
+        print("Fetching releases for changelog...")
+        changelog = build_changelog(repo_slug)
+    else:
+        print("Skipping changelog generation")
+        changelog = None
+
     print("Constructing final text...")
     text = f"{description}\n\n<b>Installation Instructions</b>\n\n{installation}\n\n{footer}\n"
+
+    if changelog:
+        text += f"\n<b>Changelog</b>\n\n{changelog}\n"
 
     print("Saving...")
     output_path.write_text(text, "utf-8")
