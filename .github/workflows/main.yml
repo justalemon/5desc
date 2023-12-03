@@ -69,7 +69,7 @@ jobs:
       - run: python -m nuitka --standalone --onefile --output-filename="fivedesc.exe" --output-dir="build" --assume-yes-for-downloads fivedesc.py
       - uses: actions/upload-artifact@v3.1.3
         with:
-          name: 5desc.Wheel
+          name: 5desc.Windows
           path: build/fivedesc.exe
   run:
     runs-on: ubuntu-22.04
