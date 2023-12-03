@@ -31,17 +31,12 @@ classifiers = [
 requires-python = ">=3.8"
 dynamic = [
     "readme",
-    "dependencies"
+    "dependencies",
+    "optional-dependencies"
 ]
 
 [project.urls]
 Homepage = "https://github.com/justalemon/5desc"
-
-[project.optional-dependencies]
-dev = [
-    "ruff>=0.0.274,<1.0.0",
-    "build>=0.0.274,<1.0.0",
-]
 
 [tool.setuptools]
 script-files = [
@@ -51,6 +46,7 @@ script-files = [
 [tool.setuptools.dynamic]
 readme = { file = ["README.md"], content-type = "text/markdown" }
 dependencies = { file = ["requirements.txt"] }
+optional-dependencies = { dev = { file = ["requirements-dev.txt"] } }
 
 [tool.ruff]
 line-length = 120
