@@ -130,6 +130,16 @@ def __get_text(doc: marko.block.Document, from_heading: Optional[str] = None) ->
             new_list += "\n</ul>"
 
             description += new_list
+        elif isinstance(section, marko.block.FencedCode):
+            lines = []
+
+            for c_children in section.children:
+                if isinstance(c_children, marko.inline.RawText):
+                    lines.append(__get_raw_text(c_children.children))
+                else:
+                    __raise_exception(type(c_children))
+
+            description += "\n".join(lines)
         else:
             __raise_exception(type(section))
 
