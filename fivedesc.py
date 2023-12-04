@@ -9,6 +9,7 @@ Under the MIT License.
 """
 
 import argparse
+import logging
 import os
 import re
 import sys
@@ -268,6 +269,7 @@ def __parse_params() -> argparse.Namespace:
 
 
 def main():  # noqa: ANN201, D103
+    logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
     args = __parse_params()
 
     input_path = Path(args.input).resolve()
@@ -276,43 +278,41 @@ def main():  # noqa: ANN201, D103
     if not input_path.is_file():
         sys.exit(f"{input_path} does not exists!")
 
-    print(f"Using {input_path} as the input file and {output_path} as the output file")
+    logging.info("Using %s as the input file and %s as the output file", input_path, output_path)
 
-    print("Fetching Repo...")
     repo_slug = __get_github_slug()
-
     if repo_slug is None:
-        print("Warning: Couldn't find GitHub repository, will skip GitHub Links")
+        logging.warning("Warning: Couldn't find GitHub repository, will skip GitHub Links")
     else:
-        print(f"Found GitHub Repository: {repo_slug}")
+        logging.info("Found GitHub Repository: %s", repo_slug)
 
     contents = input_path.read_text("utf-8")
     doc = PARSER.parse(contents)
 
-    print("Fetching Description...")
+    logging.info("Fetching Description...")
     description = __get_text(doc)
-    print("Fetching Installation Instructions...")
+    logging.info("Fetching Installation Instructions...")
     installation = __get_text(doc, "Installation")
-    print("Building Footer...")
+    logging.info("Building Footer...")
     footer = __build_footer(doc.link_ref_defs, repo_slug)
 
     if not args.no_changelog:
-        print("Fetching releases for changelog...")
+        logging.info("Fetching releases for changelog...")
         changelog = __build_changelog(repo_slug)
     else:
-        print("Skipping changelog generation")
+        logging.warning("Skipping changelog generation")
         changelog = None
 
-    print("Constructing final text...")
+    logging.info("Constructing final text...")
     text = f"{description}\n\n<b>Installation Instructions</b>\n\n{installation}\n\n{footer}\n"
 
     if changelog:
         text += f"\n<b>Changelog</b>\n\n{changelog}\n"
 
-    print("Saving...")
+    logging.info("Saving...")
     output_path.write_text(text, "utf-8")
 
-    print("Done 🍋")
+    logging.info("Done 🍋")
 
 
 if __name__ == "__main__":
