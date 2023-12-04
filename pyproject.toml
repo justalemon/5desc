@@ -38,6 +38,9 @@ dynamic = [
 [project.urls]
 Homepage = "https://github.com/justalemon/5desc"
 
+[project.scripts]
+fivedesc = "fivedesc:main"
+
 [tool.setuptools]
 script-files = [
     "fivedesc.py"
