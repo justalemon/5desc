@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+import dulwich
 import dulwich.errors
 import dulwich.repo
 import marko
