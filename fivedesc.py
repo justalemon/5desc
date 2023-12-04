@@ -46,7 +46,7 @@ def __build_link(link: marko.inline.Link) -> str:
 
 def __get_raw_text(children: str | list[marko.inline.Element]) -> str:
     if isinstance(children, str):
-        return children
+        return children.strip("\n")
 
     text = ""
 
@@ -58,7 +58,7 @@ def __get_raw_text(children: str | list[marko.inline.Element]) -> str:
         else:
             __raise_exception(type(link_children))
 
-    return text
+    return text.strip("\n")
 
 
 def __get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote) -> Optional[str]:
