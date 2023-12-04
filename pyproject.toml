@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "5desc"
 version = "1.0"
-description = "Builds 5mods Descriptions from Markdown files"
+description = "Tool to create 5mods descriptions from Markdown files"
 authors = [
     { name = "Lemon", email = "justlemoncl@gmail.com" }
 ]
