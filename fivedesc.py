@@ -80,7 +80,7 @@ def __get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote) -
     return text
 
 
-def __get_text(doc: marko.block.Document, from_heading: Optional[str] = None) -> Optional[str]:
+def __get_text(doc: marko.block.Document, from_heading: Optional[str] = None) -> Optional[str]:  # noqa: C901, PLR0912
     heading_level = 0
     description = ""
 
@@ -200,10 +200,10 @@ def __build_changelog(repo_slug: str) -> Optional[str]:
 
     while True:
         resp = requests.get(f"https://api.github.com/repos/{repo_slug}/releases?per_page=100&page={page}",
-                            headers=headers)
+                            headers=headers, timeout=120)
 
         if not resp.ok:
-            print(f"Unable to fetch Releases from GitHub: Code {resp.status_code}")
+            logging.error("Unable to fetch Releases from GitHub: Code %s", resp.status_code)
             return None
 
         fetched_releases = resp.json()

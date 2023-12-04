@@ -33,7 +33,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
   ruff:
     runs-on: ubuntu-22.04
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: actions/setup-python@v4.7.1
