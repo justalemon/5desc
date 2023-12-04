@@ -9,6 +9,7 @@ Under the MIT License.
 """
 
 import argparse
+import html
 import logging
 import os
 import re
@@ -74,6 +75,8 @@ def __get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote) -
         elif isinstance(children, marko.inline.StrongEmphasis):
             strong = __get_raw_text(children.children)
             text += f"<b>{strong}</b>"
+        elif isinstance(children, marko.inline.CodeSpan):
+            text += html.escape(children.children)
         else:
             __raise_exception(type(children))
 
