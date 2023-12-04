@@ -1,6 +1,6 @@
 # 5desc<br>[![GitHub Actions][actions-img]][actions-url] [![Patreon][patreon-img]][patreon-url] [![PayPal][paypal-img]][paypal-url] [![Discord][discord-img]][discord-url]
 
-5desc is a simple tool that can be used stanalone or as a GitHub Action to convert a README.md into a format compatible with 5mods horrible HTML input box.
+5desc (codename REGB) is a simple Python tool that can be used standalone or as a GitHub Action to convert a README.md into a format compatible with 5mods html tag limitations (only `<b>`, `<i>`, `<u>`, `<a>`, `<ul>`, `<ol>` and `<li>` is allowed) and that can be copy pasted to avoid the broken input text box ("Invalid character in description").
 
 ## Download
 
@@ -9,7 +9,27 @@
 
 ## Installation
 
-Clone the repository and use fivedesc.py, or use the action in your GitHub Workflow.
+### Windows Executable
+
+Extract the .exe files from the Windows folder in the compressed file somewhere in your system and drag and drop the .md file you would like to convert. There are also extra options you can use, they can be checked with `fivedesc --help`.
+
+### Python Wheel
+
+Extract the .whl file from the Python Wheel folder in the compressed files and then run:
+
+```
+pip install 5desc-[VERSION]-py3-none-any.whl
+```
+
+That will install the Python Wheel and all of it's requirements. There are also extra options you can use, they can be checked with `fivedesc --help`.
+
+### Docker Container
+
+Run the following command in a terminal to use the Docker Container in your current working directory:
+
+```
+docker run --rm -it -v "%cd%":/files ghcr.io/justalemon/5desc
+```
 
 ## Usage
 
