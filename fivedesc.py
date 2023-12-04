@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+
+"""
+5desc: A tool for generating 5mods descriptions.
+
+(c) 2023 Hannele Ruiz
+
+Under the MIT License.
+"""
+
 import argparse
 import os
 import re
