@@ -71,6 +71,26 @@ jobs:
         with:
           name: 5desc.Windows
           path: build/fivedesc.exe
+  release:
+    runs-on: ubuntu-22.04
+    needs:
+      - wheel
+      - nuitka
+    steps:
+      - uses: actions/download-artifact@v3.0.2
+        with:
+          name: 5desc.Wheel
+          path: Python Wheels
+      - uses: actions/download-artifact@v3.0.2
+        with:
+          name: 5desc.Windows
+          path: Windows
+      - run: ls -R
+      - run: 7z a ${{ github.event.repository.name }}.zip ${{ github.workspace }}
+      - uses: actions/upload-artifact@v3.1.3
+        with:
+          name: 5desc
+          path: ./*
   run:
     runs-on: ubuntu-22.04
     needs:
