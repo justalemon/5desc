@@ -56,7 +56,7 @@ jobs:
           name: ${{ github.event.repository.name }}.Wheel
           path: dist/*
   nuitka:
-    runs-on: windows-2022
+    runs-on: windows-2019
     needs:
       - ruff
     steps:
