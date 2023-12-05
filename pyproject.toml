@@ -39,7 +39,7 @@ dynamic = [
 Homepage = "https://github.com/justalemon/5desc"
 
 [project.scripts]
-fivedesc = "fivedesc:main"
+5desc = "fivedesc:main"
 
 [tool.setuptools]
 script-files = [
