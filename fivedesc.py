@@ -222,6 +222,33 @@ def __get_text(doc: marko.block.Document, from_heading: Optional[str] = None) ->
     return description.strip("\n")
 
 
+def __get_section_of_document(doc: marko.block.Document):
+    markdown = marko.Markdown(renderer=FiveModsRenderer)
+    markdown._setup_extensions()
+    parser = markdown.parser
+
+    heading_level = 0
+
+    for section in doc.children:
+        if heading_level == 0 and not isinstance(section, marko.block.Heading):
+            continue
+
+        if isinstance(section, marko.block.Heading):
+            if heading_level > 0:
+                if section.level <= heading_level:
+                    break
+                parser.add_element(section)
+            else:
+                if heading_level > 0 and heading_level <= section.level:
+                    break
+
+                heading_level = section.level
+        else:
+            parser.add_element(section)
+
+    return markdown.render(marko.Document())
+
+
 def __get_github_slug() -> Optional[str]:
     if "GITHUB_REPOSITORY" in os.environ:
         return os.environ["GITHUB_REPOSITORY"]
