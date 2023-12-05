@@ -70,6 +70,20 @@ jobs:
         with:
           name: ${{ github.event.repository.name }}.Windows
           path: build/fivedesc.exe
+  pacman:
+    runs-on: ubuntu-22.04
+    container: archlinux
+    steps:
+      - uses: actions/checkout@v3
+      - run: pacman -Syu --noconfirm base-devel git
+      - run: ./build-marko.sh
+      - run: makepkg -sf --noconfirm
+        env:
+          EUID: "1"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}.Arch
+          path: "*.tar.*"
   release:
     runs-on: ubuntu-22.04
     needs:
