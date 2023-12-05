@@ -15,7 +15,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import dulwich
 import dulwich.errors
@@ -23,7 +23,9 @@ import dulwich.repo
 import marko
 import marko.block
 import marko.inline
+import marko.renderer
 import requests
+from marko import block, inline
 
 RE_GITHUB = re.compile("github.com[/:]([a-zA-Z]+)/([a-zA-Z0-9]+)")
 PARSER = marko.Parser()
@@ -33,6 +35,80 @@ LICENSES = [
     ("GNU GPL v3.0", "GNU GENERAL PUBLIC LICENSE", "Version 3", "29 June 2007"),
     ("GNU GPL v2.0", "GNU GENERAL PUBLIC LICENSE", "Version 2", "June 1991")
 ]
+
+
+class FiveModsRenderer(marko.HTMLRenderer):
+    """
+    Renders the code in a 5mods compatible HTML.
+    """
+
+    def render_paragraph(self, element: block.Paragraph) -> str:  # noqa: D102
+        return self.render_children(element)
+
+    def render_list(self, element: block.List) -> str:  # noqa: D102
+        return super().render_list(element)
+
+    def render_list_item(self, element: block.ListItem) -> str:  # noqa: D102
+        return super().render_list_item(element)
+
+    def render_quote(self, element: block.Quote) -> str:  # noqa: D102
+        return "&gt; " + self.render_children(element)
+
+    def render_fenced_code(self, element: block.FencedCode) -> str:  # noqa: D102
+        return self.render_children(element)
+
+    def render_code_block(self, element: block.CodeBlock) -> str:  # noqa: D102
+        return self.render_children(element)
+
+    def render_html_block(self, element: block.HTMLBlock) -> str:  # noqa: D102, ARG002
+        return ""
+
+    def render_thematic_break(self, element: block.ThematicBreak) -> str:  # noqa: ARG002, D102
+        return "\n"
+
+    def render_heading(self, element: block.Heading) -> str:  # noqa: D102
+        return "<b>{0}</b>".format(self.render_children(element))
+
+    def render_setext_heading(self, element: block.SetextHeading) -> str:  # noqa: D102
+        return "<b>{0}</b>".format(self.render_children(element))
+
+    def render_blank_line(self, element: block.BlankLine) -> str:  # noqa: D102, ARG002
+        return ""
+
+    def render_link_ref_def(self, element: block.LinkRefDef) -> str:  # noqa: D102, ARG002
+        return ""
+
+    def render_emphasis(self, element: inline.Emphasis) -> str:  # noqa: D102
+        return "<b>{0}</b>".format(self.render_children(element))
+
+    def render_strong_emphasis(self, element: inline.StrongEmphasis) -> str:  # noqa: D102
+        return "<b>{0}</b>".format(self.render_children(element))
+
+    def render_plain_text(self, element: Any) -> str:  # noqa: D102
+        if isinstance(element.children, str):
+            return self.escape_html(element.children)
+        return self.render_children(element)
+
+    def render_link(self, element: inline.Link) -> str:  # noqa: D102
+        return super().render_link(element)
+
+    def render_auto_link(self, element: inline.AutoLink) -> str:  # noqa: D102
+        return super().render_auto_link(element)
+
+    def render_image(self, element: inline.Image) -> str:  # noqa: D102, ARG002
+        raise RuntimeError("Images are not supported in 5mods")
+
+    def render_literal(self, element: inline.Literal) -> str:  # noqa: D102
+        return super().render_literal(element)
+
+    def render_raw_text(self, element: inline.RawText) -> str:  # noqa: D102
+        return super().render_raw_text(element)
+
+    def render_line_break(self, element: inline.LineBreak) -> str:  # noqa: D102, ARG002
+        return "\n"
+
+    def render_code_span(self, element: inline.CodeSpan) -> str:  # noqa: D102
+        return marko.HTMLRenderer.escape_html(self.render_children(element))
 
 
 def __raise_exception(t: type) -> None:
