@@ -403,10 +403,12 @@ def main():  # noqa: ANN201, D103
         logging.info("Found GitHub Repository: %s", repo_slug)
 
     contents = input_path.read_text("utf-8")
-    doc = PARSER.parse(contents)
+
+    markdown = marko.Markdown(renderer=FiveModsRenderer)
+    parsed = markdown.parse(contents)
 
     logging.info("Fetching Description...")
-    description = __get_text(doc)
+    description = __get_section_of_document(parsed)
     logging.info("Fetching Installation Instructions...")
     installation = __get_text(doc, "Installation")
     logging.info("Building Footer...")
