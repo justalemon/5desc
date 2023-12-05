@@ -11,7 +11,7 @@
 
 ### Windows Executable
 
-Extract the .exe files from the Windows folder in the compressed file somewhere in your system and drag and drop the .md file you would like to convert. There are also extra options you can use, they can be checked with `fivedesc --help`.
+Extract the .exe files from the Windows folder in the compressed file somewhere in your system.
 
 ### Python Wheel
 
@@ -21,19 +21,29 @@ Extract the .whl file from the Python Wheel folder in the compressed files and t
 pip install 5desc-[VERSION]-py3-none-any.whl
 ```
 
-That will install the Python Wheel and all of it's requirements. There are also extra options you can use, they can be checked with `fivedesc --help`.
+That will install the Python Wheel and all of it's requirements.
 
 ### Docker Container
 
-Run the following command in a terminal to use the Docker Container in your current working directory:
+Run the following command in a terminal to pull the Docker container:
+
+```
+docker pull ghcr.io/justalemon/5desc
+```
+
+## Usage
+
+Open a terminal/console and run `5desc`. This will automatically convert your README.md to a README.html compatible with 5mods.
+
+for Docker, you can use the following command in Windows:
 
 ```
 docker run --rm -it -v "%cd%":/files ghcr.io/justalemon/5desc
 ```
 
-## Usage
+You can specify the name of the input file as the first parameter and the name of the output file as the second parameter.
 
-Just run fivedesc.py and it will output a README.html for you to copy paste into the text box.
+To list the available command line arguments, run 5desc with the `--help` parameter.
 
 [actions-img]: https://img.shields.io/github/actions/workflow/status/justalemon/5desc/main.yml?branch=master&label=actions
 [actions-url]: https://github.com/justalemon/5desc/actions
