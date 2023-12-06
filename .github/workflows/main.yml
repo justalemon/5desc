@@ -10,8 +10,19 @@ permissions:
   packages: write
 
 jobs:
+  ruff:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-python@v4.7.1
+        with:
+          python-version: 3.8
+      - run: pip install -r requirements-dev.txt
+      - run: ruff --output-format=github .
   docker:
     runs-on: ubuntu-22.04
+    needs:
+      - ruff
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: docker/setup-buildx-action@v3.0.0
@@ -31,15 +42,6 @@ jobs:
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-  ruff:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-python@v4.7.1
-        with:
-          python-version: 3.8
-      - run: pip install -r requirements-dev.txt
-      - run: ruff --output-format=github .
   wheel:
     runs-on: ubuntu-22.04
     needs:
