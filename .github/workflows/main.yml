@@ -65,7 +65,7 @@ jobs:
         with:
           python-version: 3.8
       - run: pip install -r requirements-dev.txt
-      - run: python -m nuitka --standalone --onefile --output-filename="fivedesc.exe" --output-dir="build" --assume-yes-for-downloads fivedesc.py
+      - run: python -m nuitka --standalone --onefile --output-filename="5desc" --output-dir="build" --assume-yes-for-downloads fivedesc.py
       - uses: actions/upload-artifact@v3.1.3
         with:
           name: ${{ github.event.repository.name }}.Windows
@@ -74,9 +74,12 @@ jobs:
     runs-on: ubuntu-22.04
     container: archlinux
     steps:
-      - uses: actions/checkout@v3
-      - run: pacman -Syu --noconfirm base-devel git
-      - run: ./build-marko.sh
+      - run: pacman -Syu --noconfirm base-devel git pip python-pip
+      - uses: actions/checkout@v4.1.1
+      - run: git clone https://aur.archlinux.org/python-marko.git marko && cd marko && makepkg -sif --noconfirm && cd ../ && rm -rf marko
+        env:
+          EUID: "1"
+      - run: pip install -r requirements-dev.txt --break-system-packages
       - run: makepkg -sf --noconfirm
         env:
           EUID: "1"
