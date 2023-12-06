@@ -35,7 +35,7 @@ docker pull ghcr.io/justalemon/5desc
 
 Open a terminal/console and run `5desc`. This will automatically convert your README.md to a README.html compatible with 5mods.
 
-for Docker, you can use the following command in Windows:
+For Docker, you can use the following command to run 5desc in the current working directory in Windows:
 
 ```
 docker run --rm -it -v "%cd%":/files ghcr.io/justalemon/5desc
