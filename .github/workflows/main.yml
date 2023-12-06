@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-22.04
     container: archlinux
     steps:
-      - run: pacman -Syu --noconfirm base-devel git pip python-pip
+      - run: pacman -Syu --noconfirm base-devel git python-pip
       - uses: actions/checkout@v4.1.1
       - run: git clone https://aur.archlinux.org/python-marko.git marko && cd marko && makepkg -sif --noconfirm && cd ../ && rm -rf marko
         env:
