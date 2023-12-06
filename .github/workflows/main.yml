@@ -92,6 +92,7 @@ jobs:
     needs:
       - wheel
       - nuitka
+      - pacman
     steps:
       - uses: actions/download-artifact@v3.0.2
         with:
@@ -101,6 +102,10 @@ jobs:
         with:
           name: ${{ github.event.repository.name }}.Windows
           path: dist/Windows
+      - uses: actions/download-artifact@v3.0.2
+        with:
+          name: ${{ github.event.repository.name }}.Arch
+          path: dist/Arch Linux
       - run: ls -R
       - run: 7z a ${{ github.event.repository.name }}.zip ${{ github.workspace }}
       - uses: actions/upload-artifact@v3.1.3
