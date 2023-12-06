@@ -69,7 +69,7 @@ jobs:
       - uses: actions/upload-artifact@v3.1.3
         with:
           name: ${{ github.event.repository.name }}.Windows
-          path: build/fivedesc.exe
+          path: build/5desc.exe
   pacman:
     runs-on: ubuntu-22.04
     container: archlinux
