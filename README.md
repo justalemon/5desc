@@ -15,7 +15,7 @@ Extract the .exe files from the Windows folder in the compressed file somewhere 
 
 ### Python Wheel
 
-Extract the .whl file from the Python Wheel folder in the compressed files and then run:
+Extract the .whl file from the Python folder in the compressed files and then run:
 
 ```
 pip install 5desc-[VERSION]-py3-none-any.whl
