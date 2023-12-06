@@ -74,6 +74,8 @@ jobs:
           if-no-files-found: error
   pacman:
     runs-on: ubuntu-22.04
+    needs:
+      - ruff
     container: archlinux
     steps:
       - run: pacman -Syu --noconfirm base-devel git python-pip
