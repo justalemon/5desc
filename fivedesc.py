@@ -212,6 +212,8 @@ def __build_changelog(repo_slug: str) -> Optional[str]:
     page = 1
 
     while True:
+        logging.info("Fetching releases page #%s", page)
+
         resp = requests.get(f"https://api.github.com/repos/{repo_slug}/releases?per_page=100&page={page}",
                             headers=headers, timeout=120)
 
@@ -222,6 +224,7 @@ def __build_changelog(repo_slug: str) -> Optional[str]:
         fetched_releases = resp.json()
 
         if not fetched_releases:
+            logging.info("All of the releases have been fetched!")
             break
 
         releases_raw.extend(fetched_releases)
