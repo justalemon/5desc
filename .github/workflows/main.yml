@@ -42,6 +42,15 @@ jobs:
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+  run:
+    runs-on: ubuntu-22.04
+    needs:
+      - docker
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: ./
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
   wheel:
     runs-on: ubuntu-22.04
     needs:
@@ -121,12 +130,3 @@ jobs:
           name: ${{ github.event.repository.name }}
           path: dist/*
           if-no-files-found: error
-  run:
-    runs-on: ubuntu-22.04
-    needs:
-      - docker
-    steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: ./
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
