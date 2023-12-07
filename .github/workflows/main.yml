@@ -7,6 +7,9 @@ on:
   pull_request:
 
 permissions:
+  # releases
+  contents: write
+  # ghcr.io
   packages: write
 
 jobs:
