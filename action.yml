@@ -1,5 +1,8 @@
 name: "5desc"
 description: "Generates 5mods descriptions in HTML from a Markdown file"
+branding:
+  icon: align-center
+  color: purple
 
 inputs: 
   input:
