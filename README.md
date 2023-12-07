@@ -9,6 +9,16 @@
 
 ## Installation
 
+### GitHub Action
+
+To use 5desc in the description, add the step to your job:
+
+```
+      - uses: justalemon/5desc@v1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+```
+
 ### Windows Executable
 
 Extract the .exe files from the Windows folder in the compressed file somewhere in your system.
@@ -41,7 +51,7 @@ For Docker, you can use the following command to run 5desc in the current workin
 docker run --rm -it -v "%cd%":/files ghcr.io/justalemon/5desc
 ```
 
-You can specify the name of the input file as the first parameter and the name of the output file as the second parameter.
+You can specify the name of the input file as the first parameter and the name of the output file as the second parameter. For GitHub Actions, This would be specified in the `with` key, called input and output respectively.
 
 To list the available command line arguments, run 5desc with the `--help` parameter.
 
