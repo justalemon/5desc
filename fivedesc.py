@@ -72,7 +72,7 @@ def __get_paragraph_text(paragraph: marko.block.Paragraph | marko.block.Quote) -
             text += __build_link(children)
         elif isinstance(children, marko.block.Paragraph):
             text += __get_paragraph_text(children)
-        elif isinstance(children, marko.inline.StrongEmphasis):
+        elif isinstance(children, (marko.inline.Emphasis, marko.inline.StrongEmphasis)):
             strong = __get_raw_text(children.children)
             text += f"<b>{strong}</b>"
         elif isinstance(children, marko.inline.CodeSpan):
